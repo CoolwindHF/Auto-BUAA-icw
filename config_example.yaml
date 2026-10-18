@@ -1,0 +1,28 @@
+# 学生收入自动监控配置示例
+# 复制为 config.yaml 后填写真实信息 (建议 chmod 600 config.yaml)
+
+student:
+  username: 1145141919810
+  password: "你的统一身份认证密码"
+
+# 监控间隔(秒),默认 1800 = 30 分钟
+check_interval: 1800
+
+# 查询设置 (可选)
+query:
+  limit: 100            # 单页拉取条数,收入流水超过此数会自动翻页
+
+# 初次部署(state.json 不存在)时,是否发送一封包含全部存量流水的基线邮件
+# 默认 true;之后每轮检查只在有新流水号时才发新增部分,重启不会重复通知
+notify_on_first_run: true
+
+# 邮件通知配置
+mail:
+  smtp_host: smtp.qq.com        # SMTP 服务器,如 smtp.qq.com / smtp.163.com / smtp.gmail.com
+  smtp_port: 465                # SSL 端口 465;若用 587 请置 use_ssl: false 并加 use_starttls: true
+  use_ssl: true
+  username: your@qq.com         # SMTP 登录账号
+  password: "SMTP授权码"         # 注意是授权码,不是邮箱登录密码
+  from: your@qq.com             # 发件人,缺省同 username
+  to:                           # 收件人,可写一个或多个
+    - your@qq.com
