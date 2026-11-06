@@ -140,10 +140,12 @@ class ICWClient:
             if payload.get("code") != 200:
                 raise RuntimeError(f"收入查询失败: {payload.get('message')}")
 
+            # 接口分页字段曾为 {data, count},现为 {mx, total},做双结构兼容
             data = payload["data"]
-            batch = data.get("data", [])
+            batch = data.get("mx") or data.get("data") or []
             rows.extend(batch)
-            if len(rows) >= data.get("count", 0) or not batch:
+            total = data.get("total") or data.get("count") or 0
+            if len(rows) >= total or not batch:
                 break
             page += 1
 
