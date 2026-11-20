@@ -204,7 +204,8 @@ def save_state(state: dict) -> None:
 def format_records(rows: list) -> tuple:
     """把新到账记录渲染成邮件正文表格,返回 (html, text)。
 
-    表格列: 发放项目、摘要、金额、税率、税额、实发金额、录入日期。
+    表格列: 部门、项目编号、项目名称、发放项目、摘要、金额、税率、税额、
+    实发金额、录入日期。
     """
     def fmt(row, v):
         value = row.get(v)
@@ -227,12 +228,16 @@ def format_records(rows: list) -> tuple:
     for row in rows:
         total += float(row.get("sfje") or row.get("je") or 0)
         lines.append(" | ".join([
+            fmt(row, "bmmc"), fmt(row, "xmbh"), fmt(row, "xmmc"),
             fmt(row, "ffxmmc"), fmt(row, "zy"),
             fmt_num(row.get("je")), fmt_tax(row),
             fmt_num(row.get("se")), fmt_num(row.get("sfje")),
             fmt(row, "lrrq")]))
         trs.append(
             "<tr>"
+            f"<td>{fmt(row, 'bmmc')}</td>"
+            f"<td>{fmt(row, 'xmbh')}</td>"
+            f"<td>{fmt(row, 'xmmc')}</td>"
             f"<td>{fmt(row, 'ffxmmc')}</td>"
             f"<td>{fmt(row, 'zy')}</td>"
             f"<td style='text-align:right'>{fmt_num(row.get('je'))}</td>"
@@ -249,6 +254,7 @@ def format_records(rows: list) -> tuple:
 <table border="1" cellpadding="6" cellspacing="0"
        style="border-collapse:collapse;border-color:#ddd;font-size:13px">
 <tr style="background:#f5f5f5">
+  <th>部门</th><th>项目编号</th><th>项目名称</th>
   <th>发放项目</th><th>摘要</th><th>金额(元)</th><th>税率</th>
   <th>税额(元)</th><th>实发金额(元)</th><th>录入日期</th>
 </tr>
@@ -289,8 +295,10 @@ def check_once(config: dict, dry_run: bool = False, reset: bool = False) -> int:
 
     if dry_run:
         for row in rows:
-            logging.info("%s | %s | %s | 金额 %s | 实发 %s | %s",
-                         row.get("lrrq"), row.get("ffxmmc"), row.get("zy"),
+            logging.info("%s | 部门 %s | 项目编号 %s | 项目名称 %s | %s | %s "
+                         "| 金额 %s | 实发 %s | %s",
+                         row.get("lrrq"), row.get("bmmc"), row.get("xmbh"),
+                         row.get("xmmc"), row.get("ffxmmc"), row.get("zy"),
                          row.get("je"), row.get("sfje"), row.get("nian"))
         logging.info("dry-run: 不对比状态、不发邮件。")
         return 0
